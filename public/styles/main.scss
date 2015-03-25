@@ -1,0 +1,270 @@
+@import "fonts.css";
+
+/*----------------------------------------------------------
+  Variables, General, resets
+------------------------------------------------------------*/
+$breakpoint-mid : 767px;
+
+$primary-pink: #ec008c;
+$white : #fff;
+$gray-lt : #eee;
+$black : #000;
+$black-50 : rgba(0,0,0,0.5);
+
+body {
+  background: #F76A6A;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+ul{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a{
+  color: inherit;
+  text-decoration: none;
+}
+
+/*----------------------------------------------------------
+  Typography
+------------------------------------------------------------*/
+.navbtn-primary {
+  font: 21px/48px HUGEAvantGardeBold;
+}
+.navbtn-secondary {
+  font: 21px/48px Galaxie;
+}
+h1 {
+  font: 120px/132px HUGEAvantGardeBold;
+  @media screen and (max-width: $breakpoint-mid) {
+    font: 44px/48px HUGEAvantGardeBold;
+  }
+}
+body {
+  font: 24px/36px Galaxie;
+  @media screen and (max-width: $breakpoint-mid) {
+    font: 14px/24px Galaxie
+  }
+}
+.copyright {
+  font: 12px/16 HelveticaNeue Helvetica;
+}
+
+
+/*----------------------------------------------------------
+    nav default >= 768px
+------------------------------------------------------------*/
+nav{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  position: relative;
+  z-index: 10;
+}
+
+#nav-logo{
+  position: relative;
+  height: 24px;
+  width: 60px;
+  flex: 0 0 60px;
+  background-image: url(../images/HUGE-white.png);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: 0 48px 0 24px;
+}
+
+#nav-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  background-color: #ec008c;
+}
+
+.navmenu-primary,.navmenu-secondary{
+  cursor: pointer;
+}
+
+/* Primary Level */
+.navmenu-primary{
+  position: relative;
+  height: 72px;
+}
+
+.navbtn-primary {
+  display: inline-block;
+  height: 72px;
+  line-height: 72px;
+  color: #fff;
+  transition: all 0.3s ease-out 0s;
+
+  &:hover{
+    background-color: #fff;
+    color: #ec008c;
+  }
+}
+
+.navbtn-primary > a {
+  display: block;
+  height: 100%;
+  padding: 0 24px;
+}
+
+/* Second Level*/
+.navmenu-secondary {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-direction: column;
+  position: absolute;
+  padding: 12px 0;
+  background-color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease-out 0s;
+  pointer-events:none;
+}
+
+// Click .navbtn-primary -> open navmenu-secondary
+@media screen and (min-width: $breakpoint-mid+1) {
+  // Light State Machine relies on JS to set the one data-attr
+  // And then display correct state all in CSS
+  @for $i from 0 through 7 {
+    body[data-navmenu-secondary="#{$i}"] .navbtn-primary:nth-child(#{$i + 1}) {
+       background-color: #fff;
+       color: #ec008c;
+
+      .navmenu-secondary{
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+  }
+}
+
+.navbtn-secondary{
+  color: #000;
+  transition: all 0.3s ease-out 0s;
+
+  &:hover{
+    color: #ec008c;
+    background-color: $gray-lt;
+  }
+}
+
+.navbtn-secondary > a {
+  display: block;
+  height: 100%;
+  padding: 0 24px;
+  white-space: nowrap;
+}
+
+#nav-curtain{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: $black-50;
+  opacity: 1;
+  transition: opacity 0.3s ease-out 0s;
+
+  // if both menus are closed, hide curtain
+  body[data-navmenu-primary="-1"][data-navmenu-secondary="-1"] &{
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+
+/*----------------------------------------------------------
+  nav changes < $breakpoint-mid
+------------------------------------------------------------*/
+@media screen and (max-width: $breakpoint-mid) {
+
+  nav{
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 20%; // leaves room for curtain overlay
+   bottom: 0;
+   z-index: 10;
+   transform: translateX(0%);
+   transition: transform 0.4s ease-out;
+
+   body[data-navmenu-primary="-1"] & {
+    transform: translateX(-100%);
+   }
+  }
+
+  #nav-bar{
+    width: 225%;
+    height: 60px;
+    top: 0;
+    left: 0;
+  }
+
+  #nav-logo{
+    display: none;
+  }
+
+  .navmenu-primary{
+    position: absolute;
+    top: 60px;
+    left: 0;
+    height: calc(100% - 60px);
+    width: 100%;
+    padding: 12px 0;
+    background: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  .navbtn-primary{
+    display: block;
+    height: auto;
+    color: #000;
+  }
+
+  .navbtn-primary > a {
+    height: 48px;
+    line-height: 48px;
+  }
+
+  .navmenu-secondary{
+    position: relative;
+    padding: 0;
+    opacity: 0;
+    max-height: 0;
+    transition: max-height 0.3s ease-out 0.3s, opacity 0.3s ease-out 0s;
+  }
+
+  // Similar Lightweight State machine as before.
+  // Change body data-attr, and apply on state here
+  @for $i from 0 through 7 {
+    body[data-navmenu-secondary="#{$i}"] .navbtn-primary:nth-child(#{$i + 1}) {
+       background-color: #fff;
+       color: #ec008c;
+
+      .navmenu-secondary{
+        transition: max-height 0.6s ease-out 0s, opacity 0.6s ease-out 0.6s;
+        opacity: 1;
+        max-height: 500px;
+        pointer-events:auto;
+      }
+    }
+  }
+
+  .navbtn-secondary{
+    color: #000;
+  }
+
+
+}
+
