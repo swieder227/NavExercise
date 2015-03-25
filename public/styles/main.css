@@ -5,6 +5,15 @@ body {
   color: #fff;
 }
 
+/*----------------------------------------------------------
+  Typography
+------------------------------------------------------------*/
+.navbtn-primary{ font: 21px/48px HUGEAvantGardeBold; }
+.navbtn-secondary{ font: 21px/48px Galaxie; }
+h1{ font: 120/132 HUGEAvantGardeBold; }
+body{ font: 24px/36px Galaxie }
+.copyright { font: 12px/16 HelveticaNeue Helvetica; }
+
 h1 {
   position: absolute;
   top: 50%;
