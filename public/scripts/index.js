@@ -67,7 +67,7 @@ function generateNavHTML(data,isRecursive){
 		navbtn.appendChild(anchor);
 
 		// Check for childen aka secondary menu
-		if(typeof(data[i].items) != "undefined" && data[i].items.length > 0){
+		if(hasChildren){
 			// if children, anchor with js to open menu
 				(function(i){
 					anchor.addEventListener("mouseup", function(){
