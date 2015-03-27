@@ -4,6 +4,7 @@
   Variables, General, resets
 ------------------------------------------------------------*/
 $breakpoint-mid : 767px;
+$breakpoint-lg : 975px;
 
 $primary-pink: #ec008c;
 $white : #fff;
@@ -12,8 +13,8 @@ $black : #000;
 $black-50 : rgba(0,0,0,0.5);
 
 body {
-  background: #F76A6A;
-  color: #000;
+  background: $white;
+  color: $black;
   margin: 0;
   padding: 0;
 }
@@ -34,6 +35,9 @@ a{
 ------------------------------------------------------------*/
 .navbtn-primary {
   font: 21px/48px HUGEAvantGardeBold;
+  @media screen and (max-width: $breakpoint-lg) and (min-width: $breakpoint-mid+1) {
+    font: 18px/36px HUGEAvantGardeBold;
+  }
 }
 .navbtn-secondary {
   font: 21px/48px Galaxie;
@@ -58,25 +62,14 @@ body {
 /*----------------------------------------------------------
     nav default >= 768px
 ------------------------------------------------------------*/
-nav{
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: row;
-  position: relative;
-  z-index: 10;
-}
 
-#nav-logo{
-  position: relative;
-  height: 24px;
-  width: 60px;
-  flex: 0 0 60px;
-  background-image: url(../images/HUGE-white.png);
-  background-position: center center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin: 0 48px 0 24px;
+nav{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  z-index: 10;
 }
 
 #nav-bar {
@@ -85,7 +78,29 @@ nav{
   left: 0;
   width: 100%;
   height: 72px;
-  background-color: #ec008c;
+  background-color: $primary-pink;
+}
+
+#nav-logo{
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  height: 24px;
+  width: 60px;
+  background-image: url(../images/HUGE-white.png);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+#nav-hamburger{
+  display: none;
+}
+
+@media screen and (min-width: $breakpoint-mid+1) {
+  #nav-menus{
+    padding-left: 24+60+48px;
+  }
 }
 
 .navmenu-primary,.navmenu-secondary{
@@ -102,12 +117,12 @@ nav{
   display: inline-block;
   height: 72px;
   line-height: 72px;
-  color: #fff;
-  transition: all 0.3s ease-out 0s;
+  color: $white;
+  transition: background 0.3s ease-out 0s, color 0.3s ease-out 0s;
 
   &:hover{
-    background-color: #fff;
-    color: #ec008c;
+    background-color: $white;
+    color: $primary-pink;
   }
 }
 
@@ -115,6 +130,14 @@ nav{
   display: block;
   height: 100%;
   padding: 0 24px;
+
+  @media screen and (max-width: $breakpoint-lg) and (min-width: $breakpoint-mid+1) {
+    padding: 0 16px;
+  }
+}
+
+.nav-copyright{
+  display: none;
 }
 
 /* Second Level*/
@@ -125,7 +148,7 @@ nav{
   flex-direction: column;
   position: absolute;
   padding: 12px 0;
-  background-color: #fff;
+  background-color: $white;
   opacity: 0;
   transition: opacity 0.3s ease-out 0s;
   pointer-events:none;
@@ -137,8 +160,8 @@ nav{
   // And then display correct state all in CSS
   @for $i from 0 through 7 {
     body[data-navmenu-secondary="#{$i}"] .navbtn-primary:nth-child(#{$i + 1}) {
-       background-color: #fff;
-       color: #ec008c;
+       background-color: $white;
+       color: $primary-pink;
 
       .navmenu-secondary{
         opacity: 1;
@@ -149,11 +172,11 @@ nav{
 }
 
 .navbtn-secondary{
-  color: #000;
+  color: $black;
   transition: all 0.3s ease-out 0s;
 
   &:hover{
-    color: #ec008c;
+    color: $primary-pink;
     background-color: $gray-lt;
   }
 }
@@ -166,7 +189,7 @@ nav{
 }
 
 #nav-curtain{
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -189,47 +212,89 @@ nav{
 @media screen and (max-width: $breakpoint-mid) {
 
   nav{
-   position: absolute;
-   top: 0;
-   left: 0;
-   right: 20%; // leaves room for curtain overlay
-   bottom: 0;
-   z-index: 10;
-   transform: translateX(0%);
-   transition: transform 0.4s ease-out;
-
-   body[data-navmenu-primary="-1"] & {
-    transform: translateX(-100%);
-   }
+    bottom: 0;
   }
 
   #nav-bar{
-    width: 225%;
+    position: relative;
+    width: 100%;
     height: 60px;
     top: 0;
     left: 0;
+    z-index: 100;
   }
 
   #nav-logo{
-    display: none;
+    position: absolute;
+    top: 20px;
+    left: calc(-100% + 20px);
+    height: 20px;
   }
 
-  .navmenu-primary{
+  #nav-hamburger{
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    height: 20px;
+    width: 24px;
+    border: none;
+    background: transparent;
+    outline: 0;
+  }
+
+  #nav-animator{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 72px);
+    height: 100%;
+
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) 0s;
+    body[data-navmenu-primary="-1"] & {
+      transform: translateX(0%);
+      transition: transform 0.4s ease-out 0.2s;
+    }
+  }
+
+  #nav-menus{
     position: absolute;
     top: 60px;
     left: 0;
-    height: calc(100% - 60px);
+    bottom: 0;
+    width: calc(100% - 72px);
+    background: $white;
+    overflow-y: auto;
+
+    transform: translateX(0%);
+    transition: transform 0.4s cubic-bezier(0.65, 0.05, 0.36, 1) 0s;
+    body[data-navmenu-primary="-1"] & {
+      transform: translateX(-100%);
+      transition: transform 0.4s ease-out 0.2s;
+    }
+  }
+
+  .navmenu-primary{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: auto;
+    min-height: calc(100% - 48px);
     width: 100%;
     padding: 12px 0;
-    background: #fff;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    box-sizing: border-box;
   }
 
   .navbtn-primary{
     display: block;
+    position: relative;
     height: auto;
-    color: #000;
+    color: $black;
+
+    &:hover {
+      background-color: $gray-lt;
+    }
   }
 
   .navbtn-primary > a {
@@ -237,9 +302,25 @@ nav{
     line-height: 48px;
   }
 
+  .navbtn-chevron:after{
+    content:'';
+    position: absolute;
+    top: 12px;
+    right: 0;
+    width: 12px;
+    height:12px;
+    border-right: 5px solid $primary-pink;
+    border-bottom: 5px solid $primary-pink;
+    margin: 0 18px;
+    pointer-events:none;
+    transform: rotate(45deg);
+    transition: transform 0.6s ease-out 0s;
+  }
+
   .navmenu-secondary{
     position: relative;
     padding: 0;
+    background-color: $white;
     opacity: 0;
     max-height: 0;
     transition: max-height 0.3s ease-out 0.3s, opacity 0.3s ease-out 0s;
@@ -249,8 +330,8 @@ nav{
   // Change body data-attr, and apply on state here
   @for $i from 0 through 7 {
     body[data-navmenu-secondary="#{$i}"] .navbtn-primary:nth-child(#{$i + 1}) {
-       background-color: #fff;
-       color: #ec008c;
+       background-color: $white;
+       color: $primary-pink;
 
       .navmenu-secondary{
         transition: max-height 0.6s ease-out 0s, opacity 0.6s ease-out 0.6s;
@@ -258,13 +339,110 @@ nav{
         max-height: 500px;
         pointer-events:auto;
       }
+
+      &.navbtn-chevron:after{
+        transform: rotate(225deg);
+      }
     }
   }
 
   .navbtn-secondary{
-    color: #000;
+    color: $black;
+  }
+
+  #nav-curtain{
+    top: 60px;
+    left: auto;
+    right: 0;
+    width: 72px;
+    z-index: 20;
+
+    transition: opacity 0.2s ease-out 0.4s;
+    body[data-navmenu-primary="-1"][data-navmenu-secondary="-1"] &{
+      transition: opacity 0.2s ease-out 0s;
+    }
+  }
+
+  .nav-copyright{
+    display: block;
+    margin: 0;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 24px;
+  }
+}
+
+/*----------------------------------------------------------
+  Hamburger
+------------------------------------------------------------*/
+.hamburger-btn{
+  height: 20px;
+}
+
+.hamburger-bar{
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: $white;
+  transform-origin: 96% 42%;
+  transition: all 0.3s cubic-bezier(.5,-0.5,.5,1.5) 0s;
+
+  &:nth-child(1){
+    top: 0;
+  }
+  &:nth-child(2){
+    top: 8px;
+  }
+  &:nth-child(3){
+    top: 16px;
   }
 
 
+  body:not([data-navmenu-primary="-1"]) & {
+    &:nth-child(1){
+      transform: rotate(-45deg);
+    }
+    &:nth-child(2){
+      opacity: 0;
+    }
+    &:nth-child(3){
+      transform: rotate(45deg);
+    }
+  }
+
 }
 
+#main{
+  margin-top: 72px;
+  @media screen and (max-width: $breakpoint-mid) {
+    margin-top: 60px;
+  }
+}
+
+.main-beauty{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  height: 640px;
+  background-image: url(../images/swieder.jpg);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  @media screen and (max-width: $breakpoint-mid) {
+    height: 450px;
+  }
+}
+
+.main-title{
+  color: $white;
+  text-shadow: 0 0 1px black;
+}
+
+.main-body{
+  max-width: 968px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}

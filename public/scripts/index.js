@@ -3,10 +3,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	// Generates nav HTML from HUGE's JSON API
 	getNavJSON();
 
-	// Event handler on curtain to close nav's
+	// Handler on curtain to close navs
 	document.getElementById("nav-curtain").addEventListener("mouseup", function(){
 		toggleNavSecondary(-1,true);
 		toggleNavPrimary(true);
+	});
+	// Handler on Hamburger to toggle menu
+	document.getElementById("nav-hamburger").addEventListener("mouseup", function(){
+		toggleNavPrimary();
+		toggleNavSecondary(-1,true);
 	});
 
 
@@ -25,7 +30,8 @@ function getNavJSON(){
 	    // Success!
 	    var data = JSON.parse(this.response);
 	    var html = generateNavHTML(data.items,false);
-	    document.getElementById("nav-menus").appendChild(html);
+	    var appendTo = document.getElementById("nav-menus");
+	    appendTo.insertBefore(html,appendTo.firstChild);
 	  } else {
 	    console.log("We reached our target server, but it returned an error");
 	  }
@@ -51,16 +57,24 @@ function generateNavHTML(data,isRecursive){
 	// iterate and create li.navbtn > a
 	for(var i = 0; i < data.length; i++){
 
+		var hasChildren = typeof(data[i].items) != "undefined" && data[i].items.length > 0;
+
 		var navbtn = document.createElement("li");
 		var anchor = document.createElement("a");
 		anchor.textContent = data[i].label;
 		navbtn.className = "navbtn-"+className;
+		navbtn.className += hasChildren ? " navbtn-chevron" : "";
 		navbtn.appendChild(anchor);
 
 		// Check for childen aka secondary menu
 		if(typeof(data[i].items) != "undefined" && data[i].items.length > 0){
 			// if children, anchor with js to open menu
-			anchor.addEventListener("mouseup", toggleNavSecondary.bind(null,i,true));
+				(function(i){
+					anchor.addEventListener("mouseup", function(){
+						toggleNavSecondary(i,true);
+						document.body.setAttribute("data-navmenu-primary",0);
+					});
+				})(i);
 			// recurse fn, and generate+append ul.navmenu-secondary
 			var navmenuChild = generateNavHTML(data[i].items,true);
 			navbtn.appendChild(navmenuChild);
@@ -75,7 +89,6 @@ function generateNavHTML(data,isRecursive){
 
 		navmenu.appendChild(navbtn);
 	}
-
 	htmlNode.appendChild(navmenu);
 	return htmlNode;
 }
@@ -97,7 +110,7 @@ function toggleNavPrimary(override){
 function toggleNavSecondary(index,override){
 	var current = document.body.getAttribute("data-navmenu-secondary");
 	current = parseInt(current);
-	if(override || current == -1){
+	if(index != current && override || current == -1){
 		document.body.setAttribute("data-navmenu-secondary",index);
 	} else {
 		document.body.setAttribute("data-navmenu-secondary",-1);
