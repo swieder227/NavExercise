@@ -63,7 +63,7 @@ body {
     nav default >= 768px
 ------------------------------------------------------------*/
 
-nav{
+header{
   position: fixed;
   top: 0;
   left: 0;
@@ -211,7 +211,7 @@ nav{
 ------------------------------------------------------------*/
 @media screen and (max-width: $breakpoint-mid) {
 
-  nav{
+  header{
     bottom: 0;
   }
 
